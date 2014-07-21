@@ -9,7 +9,7 @@ typedef union {
     struct {
         uint8_t preamble : 2; // Preamble bits, identical for all messages
         uint8_t en       : 1; // Enable bit selects adc enable
-        uint8_t sgl      : 1; // Bipolar/monopolar mode selection bit
+        uint8_t sgl      : 1; // Bipolar/unipolar mode selection bit
         uint8_t odd      : 1; // Selects between even/odd bit number
         uint8_t a        : 3; // Address of channel selected for conversion
         uint8_t en2      : 1; // Second enable bit selected if settings have changed
@@ -23,10 +23,10 @@ typedef union {
 void adcInit(void) {}
 
 adcReturn_t adcSelect(adcState_t adcState,
-                   adcChannelType_t adcChannelType,
-                   adcRejectionMode_t adcRejectionMode,
-                   adcSpeed_t adcSpeed,
-                   adcGain_t adcGain) {
+                      adcChannelType_t adcChannelType,
+                      adcRejectionMode_t adcRejectionMode,
+                      adcSpeed_t adcSpeed,
+                      adcGain_t adcGain) {
 
     adcMemory_t adcMemory;
     adcReturn_t adcReturn;
@@ -51,7 +51,7 @@ adcReturn_t adcSelect(adcState_t adcState,
             break;
     }
 
-    // Set bits to select which bipolar/monopolar channel to mux into adc
+    // Set bits to select which bipolar/UNIPOLAR channel to mux into adc
     switch (adcChannelType) {
         case BIPOLAR_CH_0_1 :
             adcMemory.bitfield.sgl = 0x00;
@@ -149,97 +149,97 @@ adcReturn_t adcSelect(adcState_t adcState,
             adcMemory.bitfield.a = 0x07;
             adcMemory.bitfield.im = 0x00;
             break;
-        case MONOPOLAR_CH_0 :
+        case UNIPOLAR_CH_0 :
             adcMemory.bitfield.sgl = 0x01;
             adcMemory.bitfield.odd = 0x00;
             adcMemory.bitfield.a = 0x00;
             adcMemory.bitfield.im = 0x00;
             break;
-        case MONOPOLAR_CH_1 :
+        case UNIPOLAR_CH_1 :
             adcMemory.bitfield.sgl = 0x01;
             adcMemory.bitfield.odd = 0x01;
             adcMemory.bitfield.a = 0x00;
             adcMemory.bitfield.im = 0x00;
             break;
-        case MONOPOLAR_CH_2 :
+        case UNIPOLAR_CH_2 :
             adcMemory.bitfield.sgl = 0x01;
             adcMemory.bitfield.odd = 0x00;
             adcMemory.bitfield.a = 0x01;
             adcMemory.bitfield.im = 0x00;
             break;
-        case MONOPOLAR_CH_3 :
+        case UNIPOLAR_CH_3 :
             adcMemory.bitfield.sgl = 0x01;
             adcMemory.bitfield.odd = 0x01;
             adcMemory.bitfield.a = 0x01;
             adcMemory.bitfield.im = 0x00;
             break;
-        case MONOPOLAR_CH_4 :
+        case UNIPOLAR_CH_4 :
             adcMemory.bitfield.sgl = 0x01;
             adcMemory.bitfield.odd = 0x00;
             adcMemory.bitfield.a = 0x02;
             adcMemory.bitfield.im = 0x00;
             break;
-        case MONOPOLAR_CH_5 :
+        case UNIPOLAR_CH_5 :
             adcMemory.bitfield.sgl = 0x01;
             adcMemory.bitfield.odd = 0x01;
             adcMemory.bitfield.a = 0x02;
             adcMemory.bitfield.im = 0x00;
             break;
-        case MONOPOLAR_CH_6 :
+        case UNIPOLAR_CH_6 :
             adcMemory.bitfield.sgl = 0x01;
             adcMemory.bitfield.odd = 0x00;
             adcMemory.bitfield.a = 0x03;
             adcMemory.bitfield.im = 0x00;
             break;
-        case MONOPOLAR_CH_7 :
+        case UNIPOLAR_CH_7 :
             adcMemory.bitfield.sgl = 0x01;
             adcMemory.bitfield.odd = 0x01;
             adcMemory.bitfield.a = 0x03;
             adcMemory.bitfield.im = 0x00;
             break;
-        case MONOPOLAR_CH_8 :
+        case UNIPOLAR_CH_8 :
             adcMemory.bitfield.sgl = 0x01;
             adcMemory.bitfield.odd = 0x00;
             adcMemory.bitfield.a = 0x04;
             adcMemory.bitfield.im = 0x00;
             break;
-        case MONOPOLAR_CH_9 :
+        case UNIPOLAR_CH_9 :
             adcMemory.bitfield.sgl = 0x01;
             adcMemory.bitfield.odd = 0x01;
             adcMemory.bitfield.a = 0x04;
             adcMemory.bitfield.im = 0x00;
             break;
-        case MONOPOLAR_CH_10 :
+        case UNIPOLAR_CH_10 :
             adcMemory.bitfield.sgl = 0x01;
             adcMemory.bitfield.odd = 0x00;
             adcMemory.bitfield.a = 0x05;
             adcMemory.bitfield.im = 0x00;
             break;
-        case MONOPOLAR_CH_11 :
+        case UNIPOLAR_CH_11 :
             adcMemory.bitfield.sgl = 0x01;
             adcMemory.bitfield.odd = 0x01;
             adcMemory.bitfield.a = 0x05;
             adcMemory.bitfield.im = 0x00;
             break;
-        case MONOPOLAR_CH_12 :
+        case UNIPOLAR_CH_12 :
             adcMemory.bitfield.sgl = 0x01;
             adcMemory.bitfield.odd = 0x00;
             adcMemory.bitfield.a = 0x06;
             adcMemory.bitfield.im = 0x00;
             break;
-        case MONOPOLAR_CH_13 :
+        case UNIPOLAR_CH_13 :
             adcMemory.bitfield.sgl = 0x01;
             adcMemory.bitfield.odd = 0x01;
             adcMemory.bitfield.a = 0x06;
             adcMemory.bitfield.im = 0x00;
             break;
-        case MONOPOLAR_CH_14 :
+        case UNIPOLAR_CH_14 :
             adcMemory.bitfield.sgl = 0x01;
             adcMemory.bitfield.odd = 0x00;
             adcMemory.bitfield.a = 0x07;
             adcMemory.bitfield.im = 0x00;
             break;
-        case MONOPOLAR_CH_15 :
+        case UNIPOLAR_CH_15 :
             adcMemory.bitfield.sgl = 0x01;
             adcMemory.bitfield.odd = 0x01;
             adcMemory.bitfield.a = 0x07;
