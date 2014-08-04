@@ -1,43 +1,38 @@
-# AVR-GCC Makefile
-#---Prefs---
-PROJECT=fnir
-MMCU=m8u2
-F_CPU=16000000 # 16 MHz
+#
+#             LUFA Library
+#     Copyright (C) Dean Camera, 2014.
+#
+#  dean [at] fourwalledcubicle [dot] com
+#           www.lufa-lib.org
+#
+# --------------------------------------
+#         LUFA Project Makefile.
+# --------------------------------------
 
-LFUSEBITS=0xFF
-HFUSEBITS=0xD9
-EFUSEBITS=0xF4
-#-----------
+# Run "make help" for target help.
 
+MCU          = atmega8u2
+ARCH         = AVR8
+#BOARD        = USBKEY
+F_CPU        = 16000000
+F_USB        = $(F_CPU)
+OPTIMIZATION = s
+TARGET       = fnir
+SRC          = main.c spi.c 2494_adc.c Descriptors.c $(LUFA_SRC_USB) $(LUFA_SRC_USBCLASS) $(LUFA_SRC_PLATFORM)
+LUFA_PATH    = ./LUFA
+CC_FLAGS     = -DUSE_LUFA_CONFIG_HEADER -IConfig
+LD_FLAGS     =
 
+# Default target
+all:
 
-SOURCES=main.c spi.c 2494_adc.c
-CC=avr-gcc
-OBJCOPY=avr-objcopy
-
-CFLAGS=-g -Os -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums -Wstrict-prototypes -DF_CPU=$(F_CPU) -Wa,-adhlns=$(<:.c=.lst) -I./ -mmcu=$(MMCU) -Wall
-AVRDUDEFLAGS=-p $(MMCU)
-
-ALL: $(PROJECT).hex filesize
-
-$(PROJECT).hex: $(PROJECT).elf
-	avr-objcopy -j .text -j .data -O ihex $(PROJECT).elf $(PROJECT).hex
-
-$(PROJECT).elf: $(SOURCES)
-	$(CC) $(CFLAGS) -o $(PROJECT).elf $(SOURCES)
-
-program-isp: $(PROJECT).hex
-	avrdude $(AVRDUDEFLAGS) -c usbasp -F -e -U flash:w:$(PROJECT).hex
-
-program: $(PROJECT).hex
-	avrdude $(AVRDUDEFLAGS) -c stk500v1 -P /dev/ttyUSB0 -b 19200 -D -U flash:w:$(PROJECT).hex:i
-
-burn-fuse:
-	avrdude $(AVRDUDEFLAGS) -c usbasp -F -u -U lfuse:w:$(LFUSEBITS):m -U hfuse:w:$(HFUSEBITS):m -U efuse:w:$(EFUSEBITS):m
-
-# Display size of file.
-filesize:
-	avr-size -C --mcu=$(MMCU) $(PROJECT).elf 
-
-clean:
-	rm -f $(PROJECT).elf $(PROJECT).hex *.lst
+# Include LUFA build script makefiles
+include $(LUFA_PATH)/Build/lufa_core.mk
+include $(LUFA_PATH)/Build/lufa_sources.mk
+include $(LUFA_PATH)/Build/lufa_build.mk
+include $(LUFA_PATH)/Build/lufa_cppcheck.mk
+include $(LUFA_PATH)/Build/lufa_doxygen.mk
+include $(LUFA_PATH)/Build/lufa_dfu.mk
+include $(LUFA_PATH)/Build/lufa_hid.mk
+include $(LUFA_PATH)/Build/lufa_avrdude.mk
+include $(LUFA_PATH)/Build/lufa_atprogram.mk
