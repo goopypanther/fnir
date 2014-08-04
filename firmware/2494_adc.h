@@ -1,43 +1,52 @@
-/******************************************************************************
-* 2494 ADC Communication Library                                              *
-* By Jeremy Ruhland                                                           *
-*                                                                             *
-* The adc will begin its measurement after the program calls adcSelect().     *
-* The proper enumerated type names are defined below. When appropriate, such  *
-* as when shutting down the adc or requesting a repeat measurement, null      *
-* types may be used, which will have no effect on the data sent to the adc.   *
-*                                                                             *
-* adcSelect() returns a struct which contains a conversion status, polarity   *
-* voltage level, which can be used together to determine error conditions and *
-* adc state.                                                                  *
-*                                                                             *
-* The following is an example of capturing a positive unipolar voltage level  *
-* referenced to common (ground) and passing it to doSomethingWithVoltage() :  *
-*                                                                             *
-* adcReturn_t voltageLevel; // adcSelect returns a struct containing voltage, *
-*                           // conversion status and polarity information     *
-*                                                                             *
-* voltageLevel = adcSelect(ENABLE,         // Enable adc                      *
-*                          UNIPOLAR_CH_0,  // Select channel 0, ref to common *
-*                          REJECT_60HZ,    // Reject 60hz powerline noise     *
-*                          AUTO_CALIBRATE, // Slower but more accurate speed  *
-*                          GAIN_1X);       // Unity gain (no amplification)   *
-*                                                                             *
-* doSomethingWithVoltage(voltageLevel.returnValue); // Pass voltage to our    *
-*                                                   // function               *
-*                                                                             *
-* And this is an example of re-running the last conversion:                   *
-*                                                                             *
-* voltageLevel = adcSelect(REPEAT,         // Repeat last conversion          *
-*                          NULL_CH,        // Don't change channel            *
-*                          NULL_REJECTION, // or rejection                    *
-*                          NULL_SPEED,     // or speed                        *
-*                          NULL_GAIN);     // or gain                         *
-*                                                                             *
-* doSomethingWithVoltage(voltageLevel.returnValue);                           *
-*                                                                             *
-******************************************************************************/
+/** @file 2494_adc.h
+* @brief 2494 ADC Communication Library
+* @author Jeremy Ruhland
+* @date 8/2014
+*
+* The adc will begin its measurement after the program calls /ref adcSelect.
+* The proper enumerated type names are defined below. When appropriate, such
+* as when shutting down the adc or requesting a repeat measurement, null
+* types may be used, which will have no effect on the data sent to the adc.
+*
+* \ref adcSelect returns a struct which contains a conversion status, polarity
+* voltage level, which can be used together to determine error conditions and
+* adc state.
+*
+* The following is an example of capturing a positive unipolar voltage level
+* referenced to common (ground) and passing it to \c doSomethingWithVoltage :
+*
+* @code
+* adcReturn_t voltageLevel; // adcSelect returns a struct containing voltage,
+*                           // conversion status and polarity information
+*
+* voltageLevel = adcSelect(ENABLE,         // Enable adc
+*                          UNIPOLAR_CH_0,  // Select channel 0, ref to common
+*                          REJECT_60HZ,    // Reject 60hz powerline noise
+*                          AUTO_CALIBRATE, // Slower but more accurate speed
+*                          GAIN_1X);       // Unity gain (no amplification)
+*
+* doSomethingWithVoltage(voltageLevel.returnValue); // Pass voltage to our
+*                                                   // function
+*
+* @endcode
+*
+* And this is an example of re-running the last conversion:
+*
+* @code
+* voltageLevel = adcSelect(REPEAT,         // Repeat last conversion
+*                          NULL_CH,        // Don't change channel
+*                          NULL_REJECTION, // or rejection
+*                          NULL_SPEED,     // or speed
+*                          NULL_GAIN);     // or gain
+*
+* doSomethingWithVoltage(voltageLevel.returnValue);
+*
+* @endcode
+*/
 
+/** Structure returned by /ref adcSelect
+*
+*/
 typedef struct {
     enum {
         ONGOING,
@@ -118,8 +127,26 @@ typedef enum adcGain {
     NULL_GAIN
 } adcGain_t;
 
+/** Initializes adc chip, not currently used.
+*
+* @param void Function does not take an argument.
+* @return Function does not return a value.
+*/
 extern void adcInit(void);
 
+/** Starts a new adc conversion and returns last result.
+*
+* SPI system should be initialized before using this.
+*
+* @param adcState         Selects current state of adc.
+* @param adcChannelType   Selects desired channel from adc.
+* @param adcRejectionMode Selects powerline noise rejection filter frequency.
+* @param adcSpeed         Selects speed of conversion, normal auto-correcting mode or
+*                          double speed (but less accurate).
+* @param adcGain          Selects gain stage on adc.
+* @return                 Returns struct containing voltage value and adc state
+*                          information.
+*/
 extern adcReturn_t adcSelect(adcState_t adcState,
                              adcChannelType_t adcChannelType,
                              adcRejectionMode_t adcRejectionMode,

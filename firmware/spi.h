@@ -1,17 +1,27 @@
-/******************************************************************************
-* Serial Peripheral Interface Module                                          *
-*                                                                             *
-* Contains functions and definitions required for 2014 ROV motherboard        *
-*                                                                             *
-* (void) spiInit(void)                  Function initializes SPI system into  *
-*                                       0,0 (clock idles low), LSB first      *
-*                                       master mode at 1Mhz.                  *
-*                                       will disable all peripherals.         *
-* (uint8_t) spiXfr(uint8_t)             Function exchanges byte, returns      *
-*                                       value left in SPI Rx buffer. Blocks   *
-*                                       until Tx complete.                    *
-*                                                                             *
-******************************************************************************/
+/** @file spi.h
+*
+* @brief Serial Peripheral Interface Module.
+* @author Jeremy Ruhland
+* @date 8/2014
+*
+* Created for rov project but imported and edited for fNIR imager project.
+*/
 
+/** SPI initialization routine
+*
+* Initializes hardware SPI system and flushes buffers
+*
+* @param void Function does not accept an argument
+* @return Function does not return a value
+*/
 extern void spiInit(void);
+
+/** SPI data transfer
+*
+* Transfers one byte of data over spi system, function blocks until transfer is
+* complete. You should call @ref spiInit before using this function.
+*
+* @param byte The byte intended to have transfered to the slave device
+* @return Function returns one byte from slave device
+*/
 extern uint8_t spiXfr(uint8_t byte);
