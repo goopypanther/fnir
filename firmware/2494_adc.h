@@ -48,24 +48,24 @@
 *
 */
 typedef struct {
-    enum {
+    enum conversionStatus {
         ONGOING,
         FINISHED
     } conversionStatus;
-    enum {
+    enum returnSign {
         POSITIVE,
         NEGATIVE
     } returnSign;
     uint16_t returnValue;
 } adcReturn_t;
 
-typedef enum adcState {
+typedef enum {
     DISABLE,
     ENABLE,
     REPEAT
 } adcState_t;
 
-typedef enum adcChannelType {
+typedef enum {
     BIPOLAR_CH_0_1,
     BIPOLAR_CH_1_0,
     BIPOLAR_CH_2_3,
@@ -102,20 +102,20 @@ typedef enum adcChannelType {
     NULL_CH
 } adcChannelType_t;
 
-typedef enum adcRejectionMode {
+typedef enum {
     REJECT_50HZ,
     REJECT_60HZ,
     REJECT_50HZ_60HZ,
     NULL_REJECTION
 } adcRejectionMode_t;
 
-typedef enum adcSpeed {
+typedef enum {
     AUTO_CALIBRATE,
     DOUBLE_SPEED,
     NULL_SPEED
 } adcSpeed_t;
 
-typedef enum adcGain {
+typedef enum {
     GAIN_1X,
     GAIN_2X,
     GAIN_4X,
