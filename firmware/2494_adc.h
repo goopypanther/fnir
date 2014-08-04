@@ -38,15 +38,6 @@
 *                                                                             *
 ******************************************************************************/
 
-#include "includes.h"
-
-extern void adcInit(void);
-extern adcReturn_t adcSelect(adcState_t adcState,
-                             adcChannelType_t adcChannelType,
-                             adcRejectionMode_t adcRejectionMode,
-                             adcSpeed_t adcSpeed,
-                             adcGain_t adcGain);
-
 typedef struct {
     enum {
         ONGOING,
@@ -113,7 +104,7 @@ typedef enum adcSpeed {
     AUTO_CALIBRATE,
     DOUBLE_SPEED,
     NULL_SPEED
-} adcSpeed_t
+} adcSpeed_t;
 
 typedef enum adcGain {
     GAIN_1X,
@@ -125,4 +116,12 @@ typedef enum adcGain {
     GAIN_64X,
     GAIN_128X,
     NULL_GAIN
-} adcGain_t
+} adcGain_t;
+
+extern void adcInit(void);
+
+extern adcReturn_t adcSelect(adcState_t adcState,
+                             adcChannelType_t adcChannelType,
+                             adcRejectionMode_t adcRejectionMode,
+                             adcSpeed_t adcSpeed,
+                             adcGain_t adcGain);

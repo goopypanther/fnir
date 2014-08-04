@@ -4,6 +4,8 @@
 *                                                                             *
 ******************************************************************************/
 
+#include "includes.h"
+
 typedef union {
     uint16_t bin;
     struct {
@@ -282,28 +284,28 @@ adcReturn_t adcSelect(adcState_t adcState,
     // Set bits for internal adc gain
     switch (adcGain) {
         case GAIN_1X :
-            adcMemory.bitfield.gain = 0x00;
+            adcMemory.bitfield.gs = 0x00;
             break;
         case GAIN_2X :
-            adcMemory.bitfield.gain = 0x01;
+            adcMemory.bitfield.gs = 0x01;
             break;
         case GAIN_4X :
-            adcMemory.bitfield.gain = 0x02;
+            adcMemory.bitfield.gs = 0x02;
             break;
         case GAIN_8X :
-            adcMemory.bitfield.gain = 0x03;
+            adcMemory.bitfield.gs = 0x03;
             break;
         case GAIN_16X :
-            adcMemory.bitfield.gain = 0x04;
+            adcMemory.bitfield.gs = 0x04;
             break;
         case GAIN_32X :
-            adcMemory.bitfield.gain = 0x05;
+            adcMemory.bitfield.gs = 0x05;
             break;
         case GAIN_64X :
-            adcMemory.bitfield.gain = 0x06;
+            adcMemory.bitfield.gs = 0x06;
             break;
         case GAIN_128X :
-            adcMemory.bitfield.gain = 0x07;
+            adcMemory.bitfield.gs = 0x07;
             break;
         default :
             break;
