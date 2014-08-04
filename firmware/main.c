@@ -7,20 +7,25 @@
 
 #include "includes.h"
 
+// Private typedefs
 typedef enum {USB_CONNECTED, USB_IDLE} USB_sys_state_t;
+typedef enum {FNIR_NULL, FNIR_730NM, FNIR_850NM, FNIR_IDLE} fnir_mode_state_t;
 
+// Function prototypes
 void mainParseCommand(void);
 void EVENT_USB_Device_Connect(void);
 void EVENT_USB_Device_Disconnect(void);
 void EVENT_USB_Device_ConfigurationChanged(void);
 void EVENT_USB_Device_ControlRequest(void);
 
-static FILE USBSerialStream;
+// Global variables
 USB_sys_state_t USBSystemState;
 
+static FILE USBSerialStream;
+#if 1
 USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface = {
     .Config = {
-        .ControlInterfaceNumber = 0,
+        .ControlInterfaceNumber = INTERFACE_ID_CDC_CCI,
         .DataINEndpoint = {
             .Address = CDC_TX_EPADDR,
             .Size = CDC_TXRX_EPSIZE,
@@ -38,18 +43,23 @@ USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface = {
         },
     },
 };
+#endif
 
+/******************************************************************************
+*
+******************************************************************************/
 int main(void) {
     USBSystemState = USB_IDLE;
 
     spiInit();
-    mainLedInit();
+    //mainLedInit();
 
     sei();
 
     for (;;) {
         switch (USBSystemState) {
         case (USB_IDLE) :
+            //USB_Init(USB_MODE_Device, );
             USB_Init();
             CDC_Device_CreateStream(&VirtualSerial_CDC_Interface, &USBSerialStream);
             break;
@@ -57,6 +67,8 @@ int main(void) {
             mainParseCommand();
             CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
             USB_USBTask();
+            break;
+        default :
             break;
         }
     }
@@ -68,16 +80,14 @@ void mainParseCommand(void) {
 
     receivedByte = fgetc(&USBSerialStream);
 
-    if((receivedByte == EOF) {
+    switch (receivedByte) {
+    case (EOF) :
         return;
-    }
-
-    if (ReceivedByte == 'b') {
-        if(buzzer_enabled) {
-            fprintf(&USBSerialStream, "Buzzer on\r\n");
-        } else {
-            fprintf(&USBSerialStream, "Buzzer off\r\n");
-        }
+        break;
+    case ('b') :
+        fprintf(&USBSerialStream, "We got B!\r\n");
+    default :
+        break;
     }
 }
 

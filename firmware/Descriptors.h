@@ -37,9 +37,9 @@
 #define _DESCRIPTORS_H_
 
 	/* Includes: */
-		#include <LUFA/Drivers/USB/USB.h>
-
 		#include <avr/pgmspace.h>
+
+		#include <LUFA/Drivers/USB/USB.h>
 
 	/* Macros: */
 		/** Endpoint address of the CDC device-to-host notification IN endpoint. */
@@ -100,11 +100,13 @@
 			STRING_ID_Product      = 2, /**< Product string ID */
 		};
 
+#if 0
 	/* Function Prototypes: */
 		uint16_t CALLBACK_USB_GetDescriptor(const uint16_t wValue,
 		                                    const uint8_t wIndex,
 		                                    const void** const DescriptorAddress)
 		                                    ATTR_WARN_UNUSED_RESULT ATTR_NON_NULL_PTR_ARG(3);
+#endif
 
 #endif
 
