@@ -3,7 +3,7 @@
 * @author Jeremy Ruhland
 * @date 8/2014
 *
-* The adc will begin its measurement after the program calls /ref adcSelect.
+* The adc will begin its measurement after the program calls \ref adcSelect.
 * The proper enumerated type names are defined below. When appropriate, such
 * as when shutting down the adc or requesting a repeat measurement, null
 * types may be used, which will have no effect on the data sent to the adc.
@@ -42,29 +42,53 @@
 * doSomethingWithVoltage(voltageLevel.returnValue);
 *
 * @endcode
+*
+* Or, if you would like to take an internal temperature measurement:
+*
+* @code
+* adcReturn_t voltageLevel; // adcSelect returns a struct containing voltage,
+*                           // conversion status and polarity information
+*
+* voltageLevel = adcSelect(ENABLE,           // Enable adc
+*                          INTERNAL_TEMP_CH, // Select channel 0, ref to common
+*                          REJECT_60HZ,      // Reject 60hz powerline noise
+*                          NULL_SPEED,       // Temp monitor autoselects speed
+*                          NULL_GAIN);       // Temp monitor autoselects gain
+*
+* doSomethingWithVoltage(voltageLevel.returnValue); // Pass voltage to our
+*                                                   // function
+* @endcode
 */
 
-/** Structure returned by /ref adcSelect
+/** Structure returned by \ref adcSelect
 *
 */
 typedef struct {
+    /** Status of conversion. */
     enum conversionStatus {
-        ONGOING,
-        FINISHED
+        ONGOING, /**< Conversion is still ongoing. */
+        FINISHED /**< Conversion has finished. */
     } conversionStatus;
+    /** Polarity of measured voltage. */
     enum returnSign {
-        POSITIVE,
-        NEGATIVE
+        POSITIVE, /**< Posivitive voltage measured. */
+        NEGATIVE /**< Negative voltage measured. */
     } returnSign;
-    uint16_t returnValue;
+    uint16_t returnValue; /**< Voltage measured on channel. */
 } adcReturn_t;
 
+/** Set mode of ADC
+*
+*/
 typedef enum {
-    DISABLE,
-    ENABLE,
-    REPEAT
+    DISABLE, /**< ADC off. */
+    ENABLE, /**< ADC on. */
+    REPEAT /**< Repeat previous measurement. */
 } adcState_t;
 
+/** Channel number and type for next measurement.
+*
+*/
 typedef enum {
     BIPOLAR_CH_0_1,
     BIPOLAR_CH_1_0,
@@ -102,6 +126,9 @@ typedef enum {
     NULL_CH
 } adcChannelType_t;
 
+/** Frequency of powerline noise rejection filter.
+*
+*/
 typedef enum {
     REJECT_50HZ,
     REJECT_60HZ,
@@ -109,12 +136,18 @@ typedef enum {
     NULL_REJECTION
 } adcRejectionMode_t;
 
+/** Speed of conversion.
+*
+*/
 typedef enum {
-    AUTO_CALIBRATE,
-    DOUBLE_SPEED,
+    AUTO_CALIBRATE, /**< Slower, more accurate. Automatically offsets error. */
+    DOUBLE_SPEED, /**< Faster but less accurate. */
     NULL_SPEED
 } adcSpeed_t;
 
+/** Gain setting of internal amplifier.
+*
+*/
 typedef enum {
     GAIN_1X,
     GAIN_2X,
@@ -129,7 +162,6 @@ typedef enum {
 
 /** Initializes adc chip, not currently used.
 *
-* @param void Function does not take an argument.
 * @return Function does not return a value.
 */
 extern void adcInit(void);

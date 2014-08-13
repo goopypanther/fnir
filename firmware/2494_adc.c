@@ -1,25 +1,30 @@
-/******************************************************************************
-* 2494 ADC Communication Library                                              *
-* By Jeremy Ruhland                                                           *
-*                                                                             *
-******************************************************************************/
+/** @file 2494_adc.c
+* @brief 2494 ADC Communication Library
+* @author Jeremy Ruhland
+* @date 8/2014
+*/
 
 #include "includes.h"
 
+/** Data fields stored inside ADC chip.
+*
+*/
 typedef union {
-    uint16_t bin;
+    /** Structured bitfield for easy settings */
     struct {
-        uint8_t preamble : 2; // Preamble bits, identical for all messages
-        uint8_t en       : 1; // Enable bit selects adc enable
-        uint8_t sgl      : 1; // Bipolar/unipolar mode selection bit
-        uint8_t odd      : 1; // Selects between even/odd bit number
-        uint8_t a        : 3; // Address of channel selected for conversion
-        uint8_t en2      : 1; // Second enable bit selected if settings have changed
-        uint8_t im       : 1; // Selects internal/external voltage source
-        uint8_t f        : 2; // Selects powerline frequency rejection mode
-        uint8_t spd      : 1; // Selects conversion speed & auto calibration
-        uint8_t gs       : 3; // Configures internal gain stage
+        uint8_t preamble : 2; /**< Preamble bits, identical for all messages */
+        uint8_t en       : 1; /**< Enable bit selects adc enable */
+        uint8_t sgl      : 1; /**< Bipolar/unipolar mode selection bit */
+        uint8_t odd      : 1; /**< Selects between even/odd bit number */
+        uint8_t a        : 3; /**< Address of channel selected for conversion */
+        uint8_t en2      : 1; /**< Second enable bit selected if settings have changed */
+        uint8_t im       : 1; /**< Selects internal/external voltage source */
+        uint8_t f        : 2; /**< Selects powerline frequency rejection mode */
+        uint8_t spd      : 1; /**< Selects conversion speed & auto calibration */
+        uint8_t gs       : 3; /**< Configures internal gain stage */
     } bitfield;
+    /** Binary type for SPI transmission */
+    uint16_t bin;
 } adcMemory_t;
 
 void adcInit(void) {}
