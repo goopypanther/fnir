@@ -11,7 +11,6 @@
 *
 * Initializes hardware SPI system and flushes buffers
 *
-* @param void Function does not accept an argument
 * @return Function does not return a value
 */
 extern void spiInit(void);

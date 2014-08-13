@@ -1,3 +1,10 @@
+/** @file spi.c
+*
+* @brief Serial Peripheral Interface Module.
+* @author Jeremy Ruhland
+* @date 8/2014
+*/
+
 #include "includes.h"
 
 void spiInit(void) {
