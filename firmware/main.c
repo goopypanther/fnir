@@ -28,7 +28,7 @@ typedef enum {FNIR_NULL, /**< System is taking null offset measurement */
 #define CHIP_DESELECT() PORTB &= ~(1<<PB6)
 
 // Function prototypes
-void mainLedInit(void);
+void mainIoInit(void);
 void mainParseCommand(uint8_t receivedByte);
 void mainFnirScan(void);
 void mainNirLedControl(fnir_mode_state_t fnirMode, uint8_t channel);
@@ -43,6 +43,8 @@ void EVENT_USB_Device_ControlRequest(void);
 USB_sys_state_t USBSystemState;
 fnir_mode_state_t fnirModeState;
 static FILE USBSerialStream;
+
+// Class define for USB CDC interface, taken from usb-serial example
 USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface = {
     .Config = {
         .ControlInterfaceNumber = INTERFACE_ID_CDC_CCI,
@@ -76,39 +78,50 @@ int main(void) {
     USBSystemState = USB_IDLE;
     fnirModeState = FNIR_STOP;
 
+    mainIoInit();
     spiInit();
-    mainLedInit();
 
     sei();
 
     for (;;) {
         switch (USBSystemState) {
+        // When disconnected, attempt to reconnect
         case (USB_IDLE) :
             LED_TOGGLE();
             USB_Init();
             CDC_Device_CreateStream(&VirtualSerial_CDC_Interface, &USBSerialStream);
             break;
+
+        // When connected, parse any received char and take measurements
         case (USB_CONNECTED) :
             LED_ON();
             receivedByte = fgetc(&USBSerialStream);
             mainParseCommand(receivedByte);
             mainFnirScan();
+
+            // Calls to LUFA
             CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
             USB_USBTask();
             break;
+
         default :
             break;
         }
     }
 }
 
-/** Initializes LED output for debug and NIR leds.
+/** Initializes LED output for debug and NIR leds & SPI ports.
 *
 */
-void mainLedInit(void) {
+void mainIoInit(void) {
+    // Debug LED
     LED_OFF();
     DDRB |= (1<<PB7);
 
+    // SPI
+    DDRB |= ((1<<PB1)|(1<<PB2));
+
+    // LED FETs
     mainNirLedControl(FNIR_NULL, 0);
     DDRD |= 0xFF; // Turn all port d IO to outputs
 }
@@ -120,20 +133,22 @@ void mainLedInit(void) {
 * Able to start and stop continuous measurements with chars \c s & \c p.
 *
 * @param receivedByte ASCII char received via usb-serial to be parsed
-* @return This function does not return a value.
 */
 void mainParseCommand(uint8_t receivedByte) {
     // Handle messages from host
     switch (receivedByte) {
     case (EOF) :
-        return;
         break;
+
     case ('s') :
         fprintf(&USBSerialStream, "Starting\r\n");
         fnirModeState = FNIR_IDLE;
+        break;
+
     case ('p') :
         fprintf(&USBSerialStream, "Stopping\r\n");
         fnirModeState = FNIR_STOP;
+
     default :
         break;
     }
@@ -144,7 +159,6 @@ void mainParseCommand(uint8_t receivedByte) {
 * Cycles through all 16 channels, taking measurements with both types of LEDs
 * as well as a non-LED measurement to calculate an offset value.
 *
-* @return This function does not return a value.
 */
 void mainFnirScan(void) {
     static uint8_t measurementChannelSelected = 0;
@@ -154,16 +168,19 @@ void mainFnirScan(void) {
     case (FNIR_NULL) :
         fnirModeState = FNIR_730NM;
         break;
+
     case (FNIR_730NM) :
         mainNirLedControl(fnirModeState, measurementChannelSelected);
         voltageLevel[0] = mainTakeMeasurement(measurementChannelSelected);
         fnirModeState = FNIR_850NM;
         break;
+
     case (FNIR_850NM) :
         mainNirLedControl(fnirModeState, measurementChannelSelected);
         voltageLevel[1] = mainTakeMeasurement(measurementChannelSelected);
         fnirModeState = FNIR_IDLE;
         break;
+
     case (FNIR_IDLE) :
         mainNirLedControl(fnirModeState, measurementChannelSelected);
         voltageLevel[2] = mainTakeMeasurement(measurementChannelSelected);
@@ -179,8 +196,10 @@ void mainFnirScan(void) {
             measurementChannelSelected = 0;
         }
         break;
+
     case (FNIR_STOP) :
         break;
+
     default:
         break;
     }
@@ -205,14 +224,20 @@ void mainNirLedControl(fnir_mode_state_t fnirMode, uint8_t channel) {
         case 0 :
             PORTD = (1<<PD0);
             break;
+
         case 1 :
             PORTD = (1<<PD2);
             break;
+
         case 2 :
             PORTD = (1<<PD4);
             break;
+
         case 3 :
             PORTD = (1<<PD6);
+            break;
+
+        default :
             break;
         }
     } else if (fnirMode == FNIR_850NM) {
@@ -220,16 +245,23 @@ void mainNirLedControl(fnir_mode_state_t fnirMode, uint8_t channel) {
         case 0 :
             PORTD = (1<<PD1);
             break;
+
         case 1 :
             PORTD = (1<<PD3);
             break;
+
         case 2 :
             PORTD = (1<<PD5);
             break;
+
         case 3 :
             PORTD = (1<<PD7);
             break;
+
+        default :
+            break;
         }
+    // If fnirMode was FNIR_IDLE|FNIR_NULL|FNIR_STOP
     } else {
         PORTD = 0x00; // Turn off all IO on port D
     }
@@ -252,39 +284,49 @@ adcReturn_t mainTakeMeasurement(uint8_t channel) {
     case 0 :
         adcChannel = UNIPOLAR_CH_0;
         break;
+
     case 1 :
         adcChannel = UNIPOLAR_CH_1;
         break;
+
     case 2 :
     case 4 :
         adcChannel = UNIPOLAR_CH_2;
         break;
+
     case 3 :
     case 5 :
         adcChannel = UNIPOLAR_CH_3;
         break;
+
     case 6 :
     case 8 :
         adcChannel = UNIPOLAR_CH_4;
         break;
+
     case 7 :
     case 9 :
         adcChannel = UNIPOLAR_CH_5;
         break;
+
     case 10 :
     case 12 :
         adcChannel = UNIPOLAR_CH_6;
         break;
+
     case 11 :
     case 13 :
         adcChannel = UNIPOLAR_CH_7;
         break;
+
     case 14 :
         adcChannel = UNIPOLAR_CH_9;
         break;
+
     case 15 :
         adcChannel = UNIPOLAR_CH_11;
         break;
+
     default :
         break;
     }
@@ -301,11 +343,11 @@ adcReturn_t mainTakeMeasurement(uint8_t channel) {
     while (PORTB & (1<<PB3)) {} // Wait for conversion complete
 
     // Get return value while commanding ADC to shutdown
-    adcReturnValue = adcSelect(DISABLE,
-                               NULL_CH,
-                               NULL_REJECTION,
-                               NULL_SPEED,
-                               NULL_GAIN);
+    adcReturnValue = adcSelect(DISABLE,        // Disable adc
+                               NULL_CH,        // Null channel
+                               NULL_REJECTION, // Null frequency rejection
+                               NULL_SPEED,     // Null conversion speed
+                               NULL_GAIN);     // Null signal gain
 
     CHIP_DESELECT();
 
@@ -369,5 +411,3 @@ void EVENT_USB_Device_ConfigurationChanged(void) {
 void EVENT_USB_Device_ControlRequest(void) {
     CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
 }
-
-
