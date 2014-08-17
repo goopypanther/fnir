@@ -16270,7 +16270,7 @@ new: Attribute TP_SIGNAL_NAME&lt;br&gt;
 <part name="GND10" library="sparkfun" deviceset="GND" device=""/>
 <part name="C15" library="adafruit" deviceset="CPOL-US" device="D" value="200uF"/>
 <part name="GND44" library="sparkfun" deviceset="GND" device=""/>
-<part name="U2" library="sparkfun" deviceset="ATMEGA8U2" device="AU"/>
+<part name="U2" library="sparkfun" deviceset="ATMEGA8U2" device="AU" value="ATMEGA16U2AU"/>
 <part name="P+5" library="supply1" deviceset="+5V" device=""/>
 <part name="C4" library="adafruit" deviceset="C-US" device="C1206" value="1uF"/>
 <part name="GND8" library="sparkfun" deviceset="GND" device=""/>
